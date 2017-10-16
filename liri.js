@@ -18,8 +18,8 @@ else if (firstArgument === "spotify-this-song"){
 	if (userQuery === undefined || userQuery === ""){
 		userQuery = 'The Sign';
 	}
-	spotifyThisSong(userQuery);
-	
+	// spotifyThisSong(userQuery);
+	getSongInfo()
 }
 else if (firstArgument === "do-what-it-says"){
 	randomSong();
@@ -79,7 +79,7 @@ function omdbMovies(userQuery){
 		response.body = JSON.parse(response.body);
 		console.log(" ");
 		console.log("Title: " + response.body.Title);
-		console.log("Released Year: " + response.body.Year);
+		console.log("Released Year: " + response.body.Released);
 		console.log("IMDB Rating: " + response.body.imdbRating);
 		// console.log(response.body.Ratings)
 		var rottenTomatoRatings = '';
@@ -194,3 +194,20 @@ function logCommandLine(){
 }
 
 
+function getSongInfo(){
+    var Spotify = require('node-spotify-api');
+    var spotify = new Spotify({
+        id:  'ca0f10ec1a0546dd9f92ca95f1907334', // replace with your keys.js value
+		secret:  '2543813dfd524e08bf73c9379482a2cb'// replace with your keys.js value
+    })
+        console.log(spotify);
+	
+	spotify
+	  .search({ type: 'track', query: 'All the Small Things' })
+	  .then(function(response) {
+	    console.log(response);
+	  })
+	  .catch(function(err) {
+	    console.log(err);
+	  });
+	}
