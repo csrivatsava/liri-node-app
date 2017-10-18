@@ -18,8 +18,7 @@ else if (firstArgument === "spotify-this-song"){
 	if (userQuery === undefined || userQuery === ""){
 		userQuery = 'The Sign';
 	}
-	// spotifyThisSong(userQuery);
-	getSongInfo()
+	 spotifyThisSong(userQuery);
 }
 else if (firstArgument === "do-what-it-says"){
 	randomSong();
@@ -38,7 +37,6 @@ function myTweets(){
 		access_token_key:myKeys.twitterKeys.access_token_key,
 		access_token_secret:myKeys.twitterKeys.access_token_secret 
 	})
-	// console.log(client)
 	var params = {csri356: 'nodejs'};
 	client.get('statuses/user_timeline', params, function(error, tweets, response) {
 	  res = JSON.stringify(tweets, null, 2)
@@ -63,6 +61,7 @@ function myTweets(){
 
 	});
 }
+//Function to retrieve movie details using omdbMovies API
 function omdbMovies(userQuery){
 	var request = require("request");
 
@@ -76,12 +75,13 @@ function omdbMovies(userQuery){
 
 	// Then create a request to the queryUrl
 	request(queryUrl,function(err,response){
+		//parsing the response into object format.
 		response.body = JSON.parse(response.body);
+
 		console.log(" ");
 		console.log("Title: " + response.body.Title);
 		console.log("Released Year: " + response.body.Released);
 		console.log("IMDB Rating: " + response.body.imdbRating);
-		// console.log(response.body.Ratings)
 		var rottenTomatoRatings = '';
 		for (var key in response.body.Ratings){
 			if (response.body.Ratings[key].Source === "Rotten Tomatoes") {
@@ -95,6 +95,7 @@ function omdbMovies(userQuery){
 		console.log("Actors: " + response.body.Actors);
 		console.log(" ");
 
+		//copying the results into logResult variable.
 		var logResult = "Title: " + response.body.Title + "\n" +
 						"Released Year: " + response.body.Year + "\n" +
 						"IMDB Rating: " + response.body.imdbRating + "\n" +
@@ -105,6 +106,7 @@ function omdbMovies(userQuery){
 						"Actors: " + response.body.Actors + "\n" +
 						"======================Results================================" + "\n"
 		var fs = require('fs');
+		// appending the results into the log file.
 		fs.appendFile("log.txt", logResult, function (err){
 			if (err){
 				return console.log(err);
@@ -113,6 +115,7 @@ function omdbMovies(userQuery){
 	})
 }
 
+// function to display the song details from spotify api.
 function spotifyThisSong(songName){
 
 	var Spotify = require('node-spotify-api');
@@ -126,10 +129,11 @@ function spotifyThisSong(songName){
 
 	spotify.request(queryUrl)
   	   .then(function(data) {
-  	   		// console.log(data.tracks.items.length)
+  	   		// checking if any data resulted from the query 
   	   		if (data.tracks.items.length != 0){
   	   			var fs = require('fs');
-	        	for (var i=0; i<limit; i++){
+	        	for (var i=0; i<data.tracks.items.length; i++){
+	        		// printing the details to the screen.
 		     		console.log(' ');
 					console.log("Artists: " + data.tracks.items[i].artists[0].name);
 					console.log("Song Name: " + data.tracks.items[i].name);
@@ -137,36 +141,34 @@ function spotifyThisSong(songName){
 					console.log("href: " + data.tracks.items[i].album.href);
 					console.log("Song Album: " + data.tracks.items[i].album.name);
 					console.log(' ');
+					
+					//copy the contents into the log file.
 					var logResult =  + "\n" + 
 								"Artists: " + data.tracks.items[i].artists[0].name + "\n" +
 	        					"Song Name: " + data.tracks.items[i].name + "\n" +
 	        					"Preview URL: " + data.tracks.items[i].preview_url + "\n" +
 	        					"href: " + data.tracks.items[i].album.href + "\n" +
-	        					"Song Album: " + data.tracks.items[i].album.name + "\n" +
-	        					"======================Results================================" + "\n"
+	        					"Song Album: " + data.tracks.items[i].album.name + "\n" 
+	        					// "======================Results================================" + "\n"
 	        		fs.appendFile("log.txt", logResult, function (err){
 						if (err){
 							return console.log(err);
 						}
-						
-
 					});	
 	        	}
-	        						
-	        	//copy the contents into the log file.
-	        	
 
         	}else {
         		console.log(" your song does not exist, please change the song phrase and try again")
         	}
-  		})
-		.catch(function(err) {
+  	})
+	.catch(function(err) {
     	console.error('Error occurred: ' + err); 
   	});
 }
 
 function randomSong(){
 	var fs = require('fs');
+	// reading the Random.txt and displaying the song details that is available in the random.txt file.
 	fs.readFile("random.txt", "utf8", function (err, data){
 		if (err){
 			return console.log(err);
@@ -178,6 +180,7 @@ function randomSong(){
 	});
 
 }
+// Function to log the command line argument into log.txt file.
 function logCommandLine(){
 	var fs = require('fs');
 	if (userQuery === undefined || userQuery === ""){
@@ -188,26 +191,6 @@ function logCommandLine(){
 		if (err){
 			return console.log(err);
 		}
-		// console.log("Command Line Arguments Logged in Log.txt file")
 
 	});	
 }
-
-
-function getSongInfo(){
-    var Spotify = require('node-spotify-api');
-    var spotify = new Spotify({
-        id:  'ca0f10ec1a0546dd9f92ca95f1907334', // replace with your keys.js value
-		secret:  '2543813dfd524e08bf73c9379482a2cb'// replace with your keys.js value
-    })
-        console.log(spotify);
-	
-	spotify
-	  .search({ type: 'track', query: 'All the Small Things' })
-	  .then(function(response) {
-	    console.log(response);
-	  })
-	  .catch(function(err) {
-	    console.log(err);
-	  });
-	}
